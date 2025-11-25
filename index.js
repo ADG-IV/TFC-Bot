@@ -81,6 +81,24 @@ const app = express();
 app.get("/", (req, res) => res.send("TFC Bot est en vie !"));
 app.listen(process.env.PORT || 3000, () => console.log("Serveur HTTP OK"));
 
+// ────── Statut dynamique du bot ──────
+client.once("ready", () => {
+  console.log(`Bot en ligne : ${client.user.tag}`);
+
+  // Statut + activité "/help"
+  client.user.setActivity("/help", { type: 2 }); // 2 = LISTENING
+  client.user.setStatus("online");
+
+  // Optionnel : texte en dessous du nom (uniquement sur le profil du bot)
+  client.user.setPresence({
+    activities: [{
+      name: "/help | 7 commandes",
+      type: 2 // Listening
+    }],
+    status: "online"
+  });
+});
+
 // Connexion du bot
 client.login(process.env.DISCORD_TOKEN).catch(err => {
   console.error("Token invalide ou manquant !", err);
