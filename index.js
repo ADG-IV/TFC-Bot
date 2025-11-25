@@ -1,25 +1,24 @@
-// ═══════════════════════════════════════════════════════════════
-//  TFC Bot – index.js – Version définitive, propre et anti-crash
-// ═══════════════════════════════════════════════════════════════
+// index.js – TFC Bot – Version finale 100% stable (2025)
 
 require("dotenv").config();
 const {
   Client,
   GatewayIntentBits,
   Collection,
-  REST,
   Routes,
+  REST,
 } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
+const express = require("express");
 
-// ────── DEBUG TOKEN (à garder 2 jours, tu pourras virer après) ──────
+// Debug token (à virer dans 2 jours si tu veux)
 console.log("Token chargé ?", !!process.env.DISCORD_TOKEN);
 if (process.env.DISCORD_TOKEN) {
   console.log("Token commence par :", process.env.DISCORD_TOKEN.slice(0, 15) + "...");
 }
 
-// ────── Client avec tous les intents nécessaires à la modération ──────
+// Client avec les bons intents pour tes commandes
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -32,32 +31,31 @@ const client = new Client({
 
 client.commands = new Collection();
 
-// ────── Chargement automatique de toutes les commandes ──────
+// Chargement automatique de toutes les commandes du dossier /commands
 const commands = [];
 const commandsPath = path.join(__dirname, "commands");
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 
-for (const file of fs.readdirSync(commandsPath).filter(f => f.endsWith(".js"))) {
+for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
   client.commands.set(command.data.name, command);
   commands.push(command.data.toJSON());
 }
 
-// ────── Bot prêt → déploiement global des slash commands ──────
+// Bot prêt → déploiement des slash commands
 client.once("ready", async () => {
-  console.log(`Bot en ligne → ${client.user.tag}`);
+  console.log(`Bot en ligne : ${client.user.tag}`);
 
   try {
-    console.log("Déploiement des slash commands...");
-    await new REST()
-      .setToken(process.env.DISCORD_TOKEN)
-      .put(Routes.applicationCommands(client.user.id), { body: commands });
-    console.log(`7 commandes déployées avec succès !`);
-  } catch (err) {
-    console.error("Erreur déploiement :", err);
+    const rest = new REST().setToken(process.env.DISCORD_TOKEN);
+    await rest.put(Routes.applicationCommands(client.user.id), { body: commands });
+    console.log(`${commands.length} commandes déployées avec succès !`);
+  } catch (error) {
+    console.error("Erreur déploiement :", error);
   }
 });
 
-// ────── Gestion des interactions – 100% anti 10062 (Unknown interaction) ──────
+// Gestion des interactions – ANTI-10062 + anti-crash
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -65,15 +63,11 @@ client.on("interactionCreate", async (interaction) => {
   if (!command) return;
 
   try {
-    // On defer TOUJOURS en premier → plus jamais de timeout
-    await interaction.deferReply();
-
-    // Exécution de la commande
+    await interaction.deferReply(); // Ligne magique qui tue l'erreur 10062
     await command.execute(interaction);
   } catch (error) {
-    console.error(`Erreur commande ${interaction.commandName} :`, error);
+    console.error(`Erreur dans /${interaction.commandName} :`, error);
     const msg = { content: "Une erreur est survenue.", ephemeral: true };
-
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply(msg).catch(() => {});
     } else {
@@ -82,13 +76,13 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-// ────── Empêche Render de tuer le bot (warning "No open ports") ──────
-const express = require("express");
+// Petit serveur Express → plus de warning "No open ports" sur Render
 const app = express();
 app.get("/", (req, res) => res.send("TFC Bot est en vie !"));
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000, () => console.log("Serveur HTTP OK"));
 
-// ────── Connexion ──────
+// Connexion du bot
 client.login(process.env.DISCORD_TOKEN).catch(err => {
-  console.error("Impossible de se connecter – token invalide ?", err);
+  console.error("Token invalide ou manquant !", err);
+  process.exit(1);
 });
