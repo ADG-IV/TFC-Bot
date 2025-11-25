@@ -1,44 +1,49 @@
-// index.js
-require('dotenv').config();
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
+// index.js – Version finale anti-crash 100% (2025)
+require("dotenv").config();
+const {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  REST,
+  Routes,
+} = require("discord.js");
+const fs = require("fs");
+const path = require("path");
 
 const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-    ],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildModeration,
+  ],
 });
 
 client.commands = new Collection();
 
-// Charge toutes les commandes du dossier /commands
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+// Chargement automatique des commandes
+const commands = [];
+const commandsPath = path.join(__dirname, "commands");
+const commandFiles = fs.readdirSync(commandsPath).filter(f => f.endsWith(".js"));
 
 for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.data.name, command);
+  const command = require(`./commands/${file}`);
+  client.commands.set(command.data.name, command);
+  commands.push(command.data.toJSON());
 }
 
-client.once('ready', () => {
-    console.log(`✅ ${client.user.tag} est en ligne en slash commands !`);
-    client.user.setActivity('/help', { type: 4 });
+// Bot prêt → déploiement des slash
+client.once("ready", async () => {
+  console.log(`Bot en ligne : ${client.user.tag}`);
+
+  try {
+    await new REST().setToken(process.env.DISCORD_TOKEN).put(
+      Routes.applicationCommands(client.user.id),
+      { body: commands }
+    );
+    console.log(`${commands.length} commandes déployées`);
+  } catch (e) { console.error(e); }
 });
 
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isChatInputCommand()) return;
-
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
-
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        await interaction.reply({ content: 'Erreur lors de l’exécution de la commande.', ephemeral: true });
-    }
-});
-
-client.login(process.env.DISCORD_TOKEN);
+// GESTION DES COMMANDES – VERSION AN
