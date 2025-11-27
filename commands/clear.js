@@ -1,4 +1,8 @@
-const { SlashCommandBuilder, PermissionsBitField, InteractionResponseFlags } = require('discord.js');
+const { 
+  SlashCommandBuilder, 
+  PermissionsBitField, 
+  InteractionResponseFlags 
+} = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,7 +14,8 @@ module.exports = {
         .setDescription('Nombre de messages à supprimer (1 à 99)')
         .setRequired(true)
         .setMinValue(1)
-        .setMaxValue(99)),
+        .setMaxValue(99)
+    ),
 
   async execute(interaction) {
     // Vérification permission
@@ -21,14 +26,14 @@ module.exports = {
       });
     }
 
-    const amount = interaction.options.getInteger('nombre');
+    const amount = interaction.options.getInteger('nombre') + 1; // +1 car la commande elle-même compte
 
-    // Suppression des messages
-    await interaction.channel.bulkDelete(amount, true);
+    // Discord limite bulkDelete à 100 messages max et refuse les messages > 14 jours
+    await interaction.channel.bulkDelete(amount, true).catch(() => {});
 
-    // Confirmation éphémère (visible seulement par l’auteur)
+    // Confirmation éphémère
     await interaction.editReply({
-      content: `${amount} message${amount > 1 ? 's' : ''} supprimé${amount > 1 ? 's' : ''} avec succès !`,
+      content: `Supprimé ${amount - 1} message${amount - 1 > 1 ? 's' : ''} !`,
       flags: InteractionResponseFlags.Ephemeral
     });
   },
