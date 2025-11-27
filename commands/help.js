@@ -9,28 +9,60 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle('Commandes du TFC Bot')
       .setColor('#00aaff')
-      .setThumbnail(interaction.client.user.displayAvatarURL())
-      .setDescription('Voici les **17** commandes disponibles :')
+      .setThumbnail(interaction.client.user.displayAvatarURL({ size: 128 }))
+      .setDescription('**17 commandes** • Modération, utilitaires et fun')
       .addFields(
-        { name: '`/ban <membre> [raison]`', value: 'Bannir définitivement un membre', inline: false },
-        { name: '`/kick <membre> [raison]`', value: 'Expulser un membre du serveur', inline: false },
-        { name: '`/clear <nombre>`', value: 'Supprimer 1 à 99 messages', inline: false },
-        { name: '`/mute <membre> <minutes> [raison]`', value: 'Mute un membre (max 28 jours)', inline: false },
-        { name: '`/tempmute <membre> <durée> [raison]`', value: 'Mute temporaire (ex: 1h, 3d)', inline: false },
-        { name: '`/warn <membre> <raison>`', value: 'Avertir un membre', inline: false },
-        { name: '`/warns <membre>`', value: 'Voir l’historique des avertissements', inline: false },
-        { name: '`/clearwarns <membre>`', value: 'Supprimer tous les warns d’un membre', inline: false },
-        { name: '`/unban <id> [raison]`', value: 'Débannir un utilisateur par son ID', inline: false },
-        { name: '`/lock [raison]`', value: 'Verrouiller le salon (seuls les modos parlent)', inline: false },
-        { name: '`/unlock [raison]`', value: 'Déverrouiller le salon', inline: false },
-        { name: '`/slowmode <secondes>`', value: 'Activer/désactiver le mode lent (0 à 6h)', inline: false },
-        { name: '`/role add <membre> <rôle>`', value: 'Ajouter un rôle à un membre', inline: false },
-        { name: '`/role remove <membre> <rôle>`', value: 'Retirer un rôle à un membre', inline: false },
-        { name: '`/userinfo [membre]`', value: 'Afficher les infos d’un membre', inline: false },
-        { name: '`/poll <question> [options]`', value: 'Créer un sondage avec réactions', inline: false },
-        { name: '`/ping`', value: 'Tester la latence du bot', inline: false }
+        // ——— MODÉRATION ———
+        {
+          name: 'Modération',
+          value: `
+          </ban:1281234567890123456>  **Ban** • Bannir définitivement
+          </kick:1281234567890123456>  **Kick** • Expulser un membre
+          </mute:1281234567890123456>  **Mute** • Timeout (max 28j)
+          </tempmute:1281234567890123456>  **Tempmute** • Mute temporaire (1h, 3d…)
+          </warn:1281234567890123456>  **Warn** • Avertir un membre
+          </warns:1281234567890123456>  **Warns** • Historique des warns
+          </clearwarns:1281234567890123456>  **Clearwarns** • Supprimer les warns
+          </unban:1281234567890123456>  **Unban** • Débannir par ID
+          `,
+          inline: false
+        },
+        // ——— GESTION SALON ———
+        {
+          name: 'Gestion de salon',
+          value: `
+          </clear:1281234567890123456>  **Clear** • Supprimer 1–99 messages
+          </lock:1281234567890123456>  **Lock** • Verrouiller le salon
+          </unlock:1281234567890123456>  **Unlock** • Déverrouiller le salon
+          </slowmode:1281234567890123456>  **Slowmode** • Mode lent (0 à 6h)
+          `,
+          inline: false
+        },
+        // ——— RÔLES & INFOS ———
+        {
+          name: 'Rôles & Informations',
+          value: `
+          </role add:1281234567890123456>  **Role add** • Ajouter un rôle
+          </role remove:1281234567890123456>  **Role remove** • Retirer un rôle
+          </userinfo:1281234567890123456>  **Userinfo** • Infos détaillées d’un membre
+          `,
+          inline: false
+        },
+        // ——— FUN & UTILES ———
+        {
+          name: 'Fun & Utilitaires',
+          value: `
+          </poll:1281234567890123456>  **Poll** • Créer un sondage
+          </ping:1281234567890123456>  **Ping** • Latence du bot
+          </help:1281234567890123456>  **Help** • Ce message
+          `,
+          inline: false
+        }
       )
-      .setFooter({ text: 'TFC Bot • 17 commandes • En ligne 24/7', iconURL: interaction.client.user.displayAvatarURL() })
+      .setFooter({ 
+        text: 'TFC Bot • En ligne 24/7 • Propulsé par discord.js v14', 
+        iconURL: interaction.client.user.displayAvatarURL() 
+      })
       .setTimestamp();
 
     await interaction.editReply({ embeds: [embed] });
