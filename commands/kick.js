@@ -8,12 +8,14 @@ module.exports = {
       option
         .setName('membre')
         .setDescription('Le membre à expulser')
-        .setRequired(true))
+        .setRequired(true)
+    )
     .addStringOption(option =>
       option
         .setName('raison')
         .setDescription('Raison du kick')
-        .setRequired(false)),
+        .setRequired(false)
+    ),
 
   async execute(interaction) {
     // Vérif permission
@@ -32,7 +34,6 @@ module.exports = {
       return interaction.editReply({
         content: 'Je ne peux pas expulser cette personne (rôle plus haut ou propriétaire).',
         flags: InteractionResponseFlags.Ephemeral
-      ;
       });
     }
 
