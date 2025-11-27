@@ -12,7 +12,6 @@ module.exports = {
       .setThumbnail(interaction.client.user.displayAvatarURL({ size: 128 }))
       .setDescription('**17 commandes** • Modération, utilitaires et fun')
       .addFields(
-        // ——— MODÉRATION ———
         {
           name: 'Modération',
           value: `
@@ -24,10 +23,9 @@ module.exports = {
           </warns:1281234567890123456>  **Warns** • Historique des warns
           </clearwarns:1281234567890123456>  **Clearwarns** • Supprimer les warns
           </unban:1281234567890123456>  **Unban** • Débannir par ID
-          `,
+          `.trim(),
           inline: false
         },
-        // ——— GESTION SALON ———
         {
           name: 'Gestion de salon',
           value: `
@@ -35,36 +33,31 @@ module.exports = {
           </lock:1281234567890123456>  **Lock** • Verrouiller le salon
           </unlock:1281234567890123456>  **Unlock** • Déverrouiller le salon
           </slowmode:1281234567890123456>  **Slowmode** • Mode lent (0 à 6h)
-          `,
+          `.trim(),
           inline: false
         },
-        // ——— RÔLES & INFOS ———
         {
           name: 'Rôles & Informations',
           value: `
           </role add:1281234567890123456>  **Role add** • Ajouter un rôle
           </role remove:1281234567890123456>  **Role remove** • Retirer un rôle
-          </userinfo:1281234567890123456>  **Userinfo** • Infos détaillées d’un membre
-          `,
+          </userinfo:1281234567890123456>  **Userinfo** • Infos détaillées
+          `.trim(),
           inline: false
         },
-        // ——— FUN & UTILES ———
         {
           name: 'Fun & Utilitaires',
           value: `
           </poll:1281234567890123456>  **Poll** • Créer un sondage
           </ping:1281234567890123456>  **Ping** • Latence du bot
           </help:1281234567890123456>  **Help** • Ce message
-          `,
+          `.trim(),
           inline: false
         }
       )
-      .setFooter({ 
-        text: 'TFC Bot • En ligne 24/7 • Propulsé par discord.js v14', 
-        iconURL: interaction.client.user.displayAvatarURL() 
-      })
+      .setFooter({ text: 'TFC Bot • En ligne 24/7', iconURL: interaction.client.user.displayAvatarURL() })
       .setTimestamp();
 
-    await interaction.editReply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] });
   },
 };

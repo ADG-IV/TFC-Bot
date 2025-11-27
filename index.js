@@ -62,18 +62,24 @@ client.on("interactionCreate", async (interaction) => {
   if (!command) return;
 
   try {
-    await interaction.deferReply();
+    // On defer TOUJOURS en premier, mais en mode "rapide"
+    if (!interaction.deferred && !interaction.replied) {
+      await interaction.deferReply({ ephemeral: false }).catch(() => {});
+    }
+
     await command.execute(interaction);
   } catch (error) {
     console.error(`Erreur dans /${interaction.commandName} :`, error);
-
-    // 64 = InteractionResponseFlags.Ephemeral → on utilise le nombre brut
     const msg = { content: "Une erreur est survenue.", flags: 64 };
 
-    if (interaction.deferred || interaction.replied) {
-      await interaction.editReply(msg).catch(() => {});
-    } else {
-      await interaction.reply(msg).catch(() => {});
+    try {
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply(msg);
+      } else {
+        await interaction.reply(msg);
+      }
+    } catch {
+      // Si même ça échoue, on laisse tomber
     }
   }
 });
