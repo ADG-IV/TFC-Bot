@@ -14,50 +14,43 @@ module.exports = {
       .addFields(
         {
           name: 'Modération',
-          value: `
-          </ban:1281234567890123456>  **Ban** • Bannir définitivement
-          </kick:1281234567890123456>  **Kick** • Expulser un membre
-          </mute:1281234567890123456>  **Mute** • Timeout (max 28j)
-          </tempmute:1281234567890123456>  **Tempmute** • Mute temporaire (1h, 3d…)
-          </warn:1281234567890123456>  **Warn** • Avertir un membre
-          </warns:1281234567890123456>  **Warns** • Historique des warns
-          </clearwarns:1281234567890123456>  **Clearwarns** • Supprimer les warns
-          </unban:1281234567890123456>  **Unban** • Débannir par ID
-          `.trim(),
+          value: '```/ban``` **Ban** • Bannir définitivement\n'
+               + '```/kick``` **Kick** • Expulser un membre\n'
+               + '```/mute``` **Mute** • Timeout (max 28j)\n'
+               + '```/tempmute``` **Tempmute** • Mute temporaire (1h, 3d…)\n'
+               + '```/warn``` **Warn** • Avertir un membre\n'
+               + '```/warns``` **Warns** • Historique des warns\n'
+               + '```/clearwarns``` **Clearwarns** • Supprimer les warns\n'
+               + '```/unban``` **Unban** • Débannir par ID',
           inline: false
         },
         {
           name: 'Gestion de salon',
-          value: `
-          </clear:1281234567890123456>  **Clear** • Supprimer 1–99 messages
-          </lock:1281234567890123456>  **Lock** • Verrouiller le salon
-          </unlock:1281234567890123456>  **Unlock** • Déverrouiller le salon
-          </slowmode:1281234567890123456>  **Slowmode** • Mode lent (0 à 6h)
-          `.trim(),
+          value: '```/clear``` **Clear** • Supprimer 1–99 messages\n'
+               + '```/lock``` **Lock** • Verrouiller le salon\n'
+               + '```/unlock``` **Unlock** • Déverrouiller le salon\n'
+               + '```/slowmode``` **Slowmode** • Mode lent (0 à 6h)',
           inline: false
         },
         {
           name: 'Rôles & Informations',
-          value: `
-          </role add:1281234567890123456>  **Role add** • Ajouter un rôle
-          </role remove:1281234567890123456>  **Role remove** • Retirer un rôle
-          </userinfo:1281234567890123456>  **Userinfo** • Infos détaillées
-          `.trim(),
+          value: '```/role add``` **Role add** • Ajouter un rôle\n'
+               + '```/role remove``` **Role remove** • Retirer un rôle\n'
+               + '```/userinfo``` **Userinfo** • Infos détaillées',
           inline: false
         },
         {
           name: 'Fun & Utilitaires',
-          value: `
-          </poll:1281234567890123456>  **Poll** • Créer un sondage
-          </ping:1281234567890123456>  **Ping** • Latence du bot
-          </help:1281234567890123456>  **Help** • Ce message
-          `.trim(),
+          value: '```/poll``` **Poll** • Créer un sondage\n'
+               + '```/ping``` **Ping** • Latence du bot\n'
+               + '```/help``` **Help** • Ce message',
           inline: false
         }
       )
       .setFooter({ text: 'TFC Bot • En ligne 24/7', iconURL: interaction.client.user.displayAvatarURL() })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [embed] });
+    // Toujours editReply → l’interaction est déjà deferrée dans index.js
+    await interaction.editReply({ embeds: [embed] });
   },
 };

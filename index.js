@@ -62,25 +62,26 @@ client.on("interactionCreate", async (interaction) => {
   if (!command) return;
 
   try {
-    // On defer TOUJOURS en premier, mais en mode "rapide"
+    // deferReply uniquement si pas déjà fait + très rapide
     if (!interaction.deferred && !interaction.replied) {
-      await interaction.deferReply({ ephemeral: false }).catch(() => {});
+      await interaction.deferReply().catch(() => {});
     }
 
+    // On passe l’interaction déjà deferrée à la commande
     await command.execute(interaction);
+
   } catch (error) {
     console.error(`Erreur dans /${interaction.commandName} :`, error);
+
     const msg = { content: "Une erreur est survenue.", flags: 64 };
 
     try {
       if (interaction.deferred || interaction.replied) {
-        await interaction.editReply(msg);
+        await interaction.editReply(msg).catch(() => {});
       } else {
-        await interaction.reply(msg);
+        await interaction.reply(msg).catch(() => {});
       }
-    } catch {
-      // Si même ça échoue, on laisse tomber
-    }
+    } catch { /* rien à faire */ }
   }
 });
 
